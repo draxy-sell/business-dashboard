@@ -26,7 +26,10 @@ html{scroll-behavior:smooth;}
 body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:100vh;transition:background .3s,color .3s;}
 
 /* ══ SCREENS ══ */
-.screen{display:none;} .screen.active{display:block;}
+#landing{display:block;}
+#login{display:none;}
+#onboarding{display:none;}
+#app{display:none;}
 
 /* ══════════════════════════════════
    LANDING PAGE
@@ -938,11 +941,15 @@ function caClient(n){return commandes.filter(c=>c.client===n&&c.statut!=='Annul�
 
 // ══ SCREENS ══
 function showScreen(id){
-  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  // Hide all screens
+  document.getElementById('landing').style.display='none';
+  document.getElementById('login').style.display='none';
+  document.getElementById('onboarding').style.display='none';
+  document.getElementById('app').style.display='none';
+  // Show target
   const el=document.getElementById(id);
-  if(el) el.classList.add('active');
-  if(id==='app'){document.getElementById('app').style.display='flex';document.getElementById('app').classList.add('active');}
-  else{document.getElementById('app').style.display='none';document.getElementById('app').classList.remove('active');}
+  if(!el) return;
+  el.style.display = (id==='app') ? 'flex' : 'block';
 }
 function showLanding(){showScreen('landing');}
 function showLogin(){showScreen('login');}
@@ -1576,4 +1583,11 @@ function gSearch(q){if(!q||q.length<2)return;const ql=q.toLowerCase();const n=cl
 function toggleTheme(){document.body.classList.toggle('light');document.querySelector('.s-btn').textContent=document.body.classList.contains('light')?'🌙':'☀️';}
 
 // ══ MODAL CLOSE ══
-document.querySelectorAll('.mo
+document.querySelectorAll('.mo').forEach(m=>m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('open');}));
+
+// ══ INIT ══
+if(currentUser&&localStorage.getItem('bdp_onboarded')){launchApp();}
+else{ showScreen('landing'); }
+</script>
+</body>
+</html>
