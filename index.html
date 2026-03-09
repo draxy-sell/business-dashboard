@@ -55,12 +55,12 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:1
   text-align:center;padding:80px 40px;position:relative;overflow:hidden;
 }
 .hero-bg{
-  position:absolute;inset:0;
+  position:absolute;inset:0;pointer-events:none;
   background:radial-gradient(ellipse 80% 60% at 50% 0%,rgba(99,102,241,.18) 0%,transparent 70%),
              radial-gradient(ellipse 40% 40% at 80% 80%,rgba(139,92,246,.12) 0%,transparent 60%);
 }
 .hero-grid{
-  position:absolute;inset:0;opacity:.04;
+  position:absolute;inset:0;opacity:.04;pointer-events:none;
   background-image:linear-gradient(var(--border) 1px,transparent 1px),linear-gradient(90deg,var(--border) 1px,transparent 1px);
   background-size:40px 40px;
 }
@@ -397,7 +397,7 @@ tbody tr:hover td{background:var(--surface2);}
       <p>Gérez vos clients, commandes, devis et factures depuis une seule interface. Simple, rapide, professionnel.</p>
       <div class="hero-btns">
         <button class="btn btn-p" style="padding:14px 28px;font-size:15px" onclick="showLogin()">🚀 Commencer gratuitement</button>
-        <button class="btn btn-g" style="padding:14px 28px;font-size:15px" onclick="showLogin()">Voir la démo</button>
+        <button class="btn btn-g" style="padding:14px 28px;font-size:15px" onclick="launchDemo()">👀 Voir la démo</button>
       </div>
       <div class="hero-stats">
         <div class="hero-stat"><div class="hero-stat-val">2 500+</div><div class="hero-stat-lab">Entreprises</div></div>
@@ -955,7 +955,45 @@ function switchLoginTab(t,btn){
   document.getElementById('form-up').style.display=t==='up'?'block':'none';
 }
 function loginOAuth(provider){
-// ══ GOOGLE REAL CALLBACK ══
+// ══ DEMO MODE ══
+function launchDemo(){
+  currentUser={name:'Sophie Martin',email:'sophie@demo.fr',role:'Administrateur',initials:'S'};
+  localStorage.setItem('bdp_user',JSON.stringify(currentUser));
+  localStorage.setItem('bdp_onboarded','1');
+  // Demo clients
+  clients=[
+    {name:'Lucas Bernard',email:'lucas@acme.fr',company:'ACME Corp',phone:'06 12 34 56 78',note:'Client prioritaire'},
+    {name:'Emma Dupont',email:'emma@techstart.fr',company:'TechStart',phone:'06 98 76 54 32',note:''},
+    {name:'Thomas Leroy',email:'thomas@mediapro.fr',company:'MediaPro',phone:'07 11 22 33 44',note:'Relancer en mars'},
+    {name:'Julie Moreau',email:'julie@greenco.fr',company:'GreenCo',phone:'06 55 44 33 22',note:''},
+    {name:'Nicolas Petit',email:'nicolas@devstudio.fr',company:'DevStudio',phone:'07 66 77 88 99',note:'VIP'},
+  ];
+  // Demo commandes
+  const now=new Date();
+  const m=(n)=>{const d=new Date(now);d.setMonth(d.getMonth()-n);return d.toISOString().split('T')[0];};
+  commandes=[
+    {date:m(0),client:'Lucas Bernard',produit:'Consulting stratégie',quantite:1,montant:3500,statut:'Payé',numFacture:'BD-'+Date.now()},
+    {date:m(0),client:'Emma Dupont',produit:'Développement web',quantite:1,montant:5200,statut:'En cours',numFacture:'BD-'+(Date.now()+1)},
+    {date:m(1),client:'Thomas Leroy',produit:'Formation digitale',quantite:3,montant:1800,statut:'Livré',numFacture:'BD-'+(Date.now()+2)},
+    {date:m(1),client:'Julie Moreau',produit:'Audit SEO',quantite:1,montant:950,statut:'Payé',numFacture:'BD-'+(Date.now()+3)},
+    {date:m(2),client:'Nicolas Petit',produit:'Maintenance mensuelle',quantite:1,montant:800,statut:'Payé',numFacture:'BD-'+(Date.now()+4)},
+    {date:m(2),client:'Lucas Bernard',produit:'Design UI/UX',quantite:1,montant:2200,statut:'Livré',numFacture:'BD-'+(Date.now()+5)},
+    {date:m(3),client:'Emma Dupont',produit:'Hébergement annuel',quantite:1,montant:480,statut:'Payé',numFacture:'BD-'+(Date.now()+6)},
+    {date:m(3),client:'Thomas Leroy',produit:'Consulting stratégie',quantite:1,montant:1500,statut:'Annulé',numFacture:'BD-'+(Date.now()+7)},
+  ];
+  devis=[
+    {date:m(0),client:'Nicolas Petit',produit:'Refonte site web',quantite:1,montant:4800,statut:'En attente',numDevis:'BD-DEV-001',expiry:m(-1),notes:'Inclut design + dev'},
+    {date:m(1),client:'Julie Moreau',produit:'Pack réseaux sociaux',quantite:1,montant:1200,statut:'Accepté',numDevis:'BD-DEV-002',expiry:m(-2),notes:''},
+  ];
+  journal=[
+    {dt:new Date().toLocaleString('fr-FR'),user:'Sophie Martin',action:'Connexion démo lancée',type:'add'},
+    {dt:new Date(Date.now()-86400000).toLocaleString('fr-FR'),user:'Sophie Martin',action:'Ajout client Nicolas Petit',type:'add'},
+    {dt:new Date(Date.now()-172800000).toLocaleString('fr-FR'),user:'Sophie Martin',action:'Facture payée — Lucas Bernard 3500€',type:'edit'},
+  ];
+  save();
+  launchApp();
+  showToast('🎉 Mode démo activé — données exemples chargées !');
+}
 function handleGoogleLogin(response){
   try{
     const base64=response.credential.split('.')[1].replace(/-/g,'+').replace(/_/g,'/');
